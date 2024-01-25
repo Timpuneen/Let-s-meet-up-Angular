@@ -1,1 +1,148 @@
-<p>event-detail works!</p>
+<div class="event-detail-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    Loading event details...
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Success State -->
+  <div *ngIf="successMessage" class="success-message">
+    {{ successMessage }}
+  </div>
+
+  <!-- Create Mode -->
+  <div *ngIf="isCreateMode" class="create-form">
+    <h2>Create New Event</h2>
+    
+    <div class="form-group">
+      <label>Title *</label>
+      <input 
+        type="text" 
+        [(ngModel)]="newEvent.title" 
+        placeholder="Event title"
+        required
+      />
+    </div>
+
+    <div class="form-group">
+      <label>Description *</label>
+      <textarea 
+        [(ngModel)]="newEvent.description" 
+        placeholder="Event description"
+        rows="5"
+        required
+      ></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Date and Time *</label>
+      <input 
+        type="datetime-local" 
+        [(ngModel)]="newEvent.date" 
+        name="date"
+        required
+      />
+      <small style="color: #666; margin-top: 5px;">Django expects: YYYY-MM-DDTHH:mm:ss</small>
+    </div>
+
+    <div class="form-group">
+      <label>Location</label>
+      <input 
+        type="text" 
+        [(ngModel)]="newEvent.location" 
+        name="location"
+        placeholder="Event location"
+      />
+    </div>
+
+    <div class="button-group">
+      <button (click)="goBack()" class="btn-secondary">Cancel</button>
+      <button (click)="createEvent()" class="btn-primary">Create Event</button>
+    </div>
+  </div>
+
+  <!-- Detail View Mode -->
+  <div *ngIf="!isCreateMode && event && !isLoading" class="event-detail">
+    <button (click)="goBack()" class="btn-back">← Back to Events</button>
+
+    <div class="event-header">
+      <h1>{{ event.title }}</h1>
+      <span 
+        [class.badge-registered]="event.is_registered"
+        [class.badge-organizer]="isOrganizer()"
+        [class.badge-available]="!event.is_registered && !isOrganizer()"
+        class="badge">
+        {{ isOrganizer() ? 'Your Event' : (event.is_registered ? 'Registered' : 'Available') }}
+      </span>
+    </div>
+
+    <div class="event-body">
+      <section class="event-section">
+        <h3>Description</h3>
+        <p>{{ event.description }}</p>
+      </section>
+
+      <section class="event-section">
+        <h3>Event Information</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <strong>Date & Time:</strong>
+            <span>{{ formatDate(event.date) }}</span>
+          </div>
+          <div class="info-item" *ngIf="event.location">
+            <strong>Location:</strong>
+            <span>{{ event.location }}</span>
+          </div>
+          <div class="info-item">
+            <strong>Organizer:</strong>
+            <span>{{ event.organizer.name }} ({{ event.organizer.email }})</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="event-section">
+        <h3>Participants ({{ event.participants_count }})</h3>
+        <div class="participants-list" *ngIf="event.participants && event.participants.length > 0">
+          <div *ngFor="let participant of event.participants" class="participant-card">
+            <div class="participant-avatar">{{ participant.name.charAt(0).toUpperCase() }}</div>
+            <div class="participant-info">
+              <strong>{{ participant.name }}</strong>
+              <span>{{ participant.email }}</span>
+            </div>
+          </div>
+        </div>
+        <p *ngIf="event.participants_count === 0" class="empty-participants">
+          No participants yet. Be the first to register!
+        </p>
+      </section>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons" *ngIf="authService.isAuthenticated() && !isOrganizer()">
+        <button 
+          *ngIf="!event.is_registered" 
+          (click)="registerForEvent()" 
+          class="btn-primary btn-large">
+          Register for Event
+        </button>
+        <button 
+          *ngIf="event.is_registered" 
+          (click)="cancelRegistration()" 
+          class="btn-danger btn-large">
+          Cancel Registration
+        </button>
+      </div>
+
+      <div class="info-box" *ngIf="!authService.isAuthenticated()">
+        <p>Please <a routerLink="/login">login</a> to register for this event.</p>
+      </div>
+
+      <div class="info-box" *ngIf="isOrganizer()">
+        <p>You are the organizer of this event</p>
+      </div>
+    </div>
+  </div>
+</div>

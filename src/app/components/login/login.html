@@ -1,1 +1,65 @@
-<p>login works!</p>
+<div class="login-container">
+  <div class="login-card">
+    <h2>{{ isLoginMode ? 'Login' : 'Sign Up' }}</h2>
+    
+    <!-- Property Binding - class -->
+    <div [class.error-message]="errorMessage" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+    
+    <div [class.success-message]="successMessage" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+
+    <form (ngSubmit)="onSubmit()">
+      <!-- Two-way Binding - ngModel -->
+      <div class="form-group">
+        <label>Email</label>
+        <input 
+          type="email" 
+          [(ngModel)]="email" 
+          name="email" 
+          required
+          placeholder="Enter your email"
+        />
+      </div>
+
+      <!-- Two-way Binding -->
+      <div class="form-group" *ngIf="!isLoginMode">
+        <label>Name</label>
+        <input 
+          type="text" 
+          [(ngModel)]="name" 
+          name="name" 
+          required
+          placeholder="Enter your name"
+        />
+      </div>
+
+      <!-- Two-way Binding -->
+      <div class="form-group">
+        <label>Password</label>
+        <input 
+          type="password" 
+          [(ngModel)]="password" 
+          name="password" 
+          required
+          placeholder="Enter your password"
+        />
+      </div>
+
+      <!-- Event Binding - submit -->
+      <button type="submit" class="btn-primary">
+        {{ isLoginMode ? 'Login' : 'Sign Up' }}
+      </button>
+    </form>
+
+    <!-- Event Binding - click -->
+    <p class="toggle-text">
+      {{ isLoginMode ? "Don't have an account?" : 'Already have an account?' }}
+      <span (click)="toggleMode()" class="link">
+        {{ isLoginMode ? 'Sign Up' : 'Login' }}
+      </span>
+    </p>
+  </div>
+</div>
