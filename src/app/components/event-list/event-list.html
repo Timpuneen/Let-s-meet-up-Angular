@@ -1,1 +1,76 @@
-<p>event-list works!</p>
+<div class="event-list-container">
+  <div class="header">
+    <h1>Upcoming Meetups</h1>
+    <button 
+      *ngIf="authService.isAuthenticated()" 
+      (click)="createNewEvent()" 
+      class="btn-primary">
+      Create Event
+    </button>
+  </div>
+
+  <!-- Live Search Input -->
+  <div class="search-container">
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      (input)="onSearchChange(searchTerm)"
+      placeholder="Search events by title, description, or organizer..."
+      class="search-input"
+    />
+    <span class="search-results-count" *ngIf="searchTerm">
+      Found {{ filteredEvents.length }} event(s)
+    </span>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    Loading events...
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Event List -->
+  <div class="events-grid" *ngIf="!isLoading && !errorMessage">
+    <div 
+      *ngFor="let event of filteredEvents" 
+      class="event-card"
+      (click)="viewEventDetails(event.id)">
+      
+      <div class="event-header">
+        <h3>{{ event.title }}</h3>
+        <span 
+          [class.badge-registered]="event.is_registered"
+          [class.badge-available]="!event.is_registered"
+          class="badge">
+          {{ event.is_registered ? 'Registered' : 'Available' }}
+        </span>
+      </div>
+
+      <p class="event-description">{{ event.description }}</p>
+
+      <div class="event-info">
+        <div class="info-item">
+          <strong>Date:</strong> {{ formatDate(event.date) }}
+        </div>
+        <div class="info-item">
+          <strong>Organizer:</strong> {{ event.organizer.name }}
+        </div>
+        <div class="info-item">
+          <strong>Participants:</strong> {{ event.participants_count }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredEvents.length === 0" class="empty-state">
+      <p>No events found</p>
+      <p *ngIf="searchTerm" class="empty-hint">
+        Try adjusting your search term
+      </p>
+    </div>
+  </div>
+</div>
