@@ -1,0 +1,44 @@
+<div class="app-container">
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-content">
+      <a routerLink="/events" class="nav-brand">Let`s Meetup</a>
+      
+      <div class="nav-links">
+        <a 
+          routerLink="/events" 
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: false}"
+          class="nav-link">
+          Events
+        </a>
+        
+        <!-- Property Binding & ngIf -->
+        <div *ngIf="authService.isAuthenticated()" class="nav-user">
+          <span class="user-greeting">{{ currentUserName }}</span>
+          <!-- Event Binding -->
+          <button (click)="onLogout()" class="btn-logout">Logout</button>
+        </div>
+        
+        <a 
+          *ngIf="!authService.isAuthenticated()" 
+          routerLink="/login" 
+          routerLinkActive="active"
+          class="nav-link">
+          Login
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© 2025 Meetup App - Built with Angular & Django</p>
+  </footer>
+</div>
+
